@@ -1,0 +1,78 @@
+---
+title: "Statistical Analysis of 待取名"
+author:
+  - 李铮驭
+  - 徐通
+documentclass: ctexart
+geometry: "left=3.18cm,right=3.18cm,top=2.54cm,bottom=2.54cm"
+output:
+  rticles::ctex:
+    fig_caption: no
+    number_sections: yes
+    toc: yes
+classoption: "hyperref,"
+---
+
+# Abstract
+
+The text of your abstract.  150 -- 250 words.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.
+
+
+# Introduction {#intro}
+
+This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.
+
+# Descriptive Statistical Analysis {#sec:1}
+
+We use one of the Harvard PRIM-H project data sets(Dr. John Woodhouse, Dept. of Geophysics, Harvard University). The dataset has 1000 observations on the following five numeric variables: 
+
+$x_1 = lat$ means latitude of event.
+
+$x_2 = long$ means longitude.
+
+$x_3 = depth$ means depth(km).
+
+$x_4 = mag$ means Richter Magnitude, which magnitudes the earthquakes.
+
+$x_5 = stations$ means the number of stations reporting. 
+
+```{r}
+data <- quakes
+head(data)
+length(data)
+summary(data)
+plot(data)
+par(mfrow = c(2,3))
+boxplot(data$lat, main = "The Boxplot of Latitude");
+boxplot(data$long, main = "The Boxplot of Longitude");
+boxplot(data$depth, main  = "The Boxplot of Depth(km)");
+boxplot(data$mag, main = "The Boxplot of Richer Magnitude");
+boxplot(data$stations, main = "The Boxplot of Stations Reporting Number")
+```
+
+
+# Method Used in the Data Analysis
+
+## Noninformative Prior
+
+### Formula Analyzing
+
+### Direct Simulation
+
+### Indirect Simulation
+
+## A Conjugate Joint Prior
+
+# MCMC Method
+
+## Noninformative Prior with MCMC
+
+## Conjugate Joint Prior with MCMC
+
+# Hierarchical Model
+
+# Results
+
+# Conclusion
+
+# References
