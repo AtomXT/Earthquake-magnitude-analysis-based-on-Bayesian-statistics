@@ -1,0 +1,87 @@
+---
+title: "Earthquake Magnitude Analysis Based on Bayesian statistics"
+author:
+  - Zhengyu Li (10175000225)
+  - Tong Xu (1016500223)
+date: "2020/05/30"
+output: 
+  pdf_document:
+    toc: true
+    fig_crop: false
+    keep_tex: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(car)
+library(forecast)
+```
+
+\begin{abstract}
+The text of your abstract.  150 -- 250 words.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.
+\end{abstract}
+
+# Introduction {#intro}
+
+Fiji ’s urban area needs to demolish an area of old houses and then rebuild.  Because the Fiji Islands are located on the boundary between the Pacific Plate and the Indian Plate, and are located on the Pacific Rim Volcanic Seismic Belt, the crustal plates collide, squeeze, and deform, making Fiji a country prone to earthquakes.Therefore, when designing a house, the government must simultaneously consider various factors such as budget and earthquake resistance level. Therefore, this article will conduct a statistical analysis of the earthquakes with a magnitude greater than 4.0 in Fiji since 1964. Find the characteristics of the earthquake in the area and provide a reference for the local government's architectural planning.
+
+# Descriptive Statistical Analysis {#sec:1}
+
+We use one of the Harvard PRIM-H project data sets(Dr. John Woodhouse, Dept. of Geophysics, Harvard University). The dataset has 1000 observations on the following five numeric variables: 
+
+$x_1 = lat$ means latitude of event.
+
+$x_2 = long$ means longitude.
+
+$x_3 = depth$ means depth(km).
+
+$x_4 = mag$ means Richter Magnitude, which magnitudes the earthquakes.
+
+$x_5 = stations$ means the number of stations reporting. 
+
+Those events occurred in a cube near Fiji since 1964.
+
+```{r}
+data <- quakes
+data <- data[,c("depth", "mag", "stations")]
+M <- read.csv("./quakes.csv")
+head(data)
+dim(data)[1]
+summary(data)
+plot(data)
+mag <- M$mag
+hist(mag,15)
+par(mfrow = c(1,3))
+boxplot(data$depth, main  = "The Boxplot of Depth(km)");
+boxplot(data$mag, main = "The Boxplot of Richer Magnitude");
+boxplot(data$stations, main = "The Boxplot of Stations Reporting Number")
+```
+
+
+# Method Used in the Data Analysis
+
+## Noninformative Prior
+
+### Formula Analyzing
+
+### Direct Simulation
+
+### Indirect Simulation
+
+## A Conjugate Joint Prior
+
+# MCMC Method
+
+## Noninformative Prior with MCMC
+
+## Conjugate Joint Prior with MCMC
+
+# Hierarchical Model
+
+# Results
+
+# Conclusion
+
+# References
