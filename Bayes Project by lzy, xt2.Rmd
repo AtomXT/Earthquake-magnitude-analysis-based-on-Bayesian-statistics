@@ -45,14 +45,15 @@ Those events occurred in a cube near Fiji since 1964.
 
 ```{r}
 data <- quakes
+data <- data[,c("depth", "mag", "stations")]
+M <- read.csv("./quakes.csv")
 head(data)
 dim(data)[1]
 summary(data)
 plot(data)
-hist(data$mag)
-par(mfrow = c(2,3))
-boxplot(data$lat, main = "The Boxplot of Latitude");
-boxplot(data$long, main = "The Boxplot of Longitude");
+mag <- M$mag
+hist(mag,15)
+par(mfrow = c(1,3))
 boxplot(data$depth, main  = "The Boxplot of Depth(km)");
 boxplot(data$mag, main = "The Boxplot of Richer Magnitude");
 boxplot(data$stations, main = "The Boxplot of Stations Reporting Number")
