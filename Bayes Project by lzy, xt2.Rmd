@@ -1,26 +1,31 @@
 ---
-title: "Statistical Analysis of 待取名"
+title: "Earthquake Magnitude Analysis Based on Bayesian statistics"
 author:
-  - 李铮驭
-  - 徐通
-documentclass: ctexart
-geometry: "left=3.18cm,right=3.18cm,top=2.54cm,bottom=2.54cm"
-output:
-  rticles::ctex:
-    fig_caption: no
-    number_sections: yes
-    toc: yes
-classoption: "hyperref,"
+  - Zhengyu Li (10175000225)
+  - Tong Xu (1016500223)
+date: "2020/05/30"
+output: 
+  pdf_document:
+    toc: true
+    fig_crop: false
+    keep_tex: true
+    number_sections: true
 ---
 
-# Abstract
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(car)
+library(forecast)
+```
 
+\begin{abstract}
 The text of your abstract.  150 -- 250 words.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.This is our abstract.
-
+\end{abstract}
 
 # Introduction {#intro}
 
-This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.This is our introduction.
+Fiji ’s urban area needs to demolish an area of old houses and then rebuild.  Because the Fiji Islands are located on the boundary between the Pacific Plate and the Indian Plate, and are located on the Pacific Rim Volcanic Seismic Belt, the crustal plates collide, squeeze, and deform, making Fiji a country prone to earthquakes.Therefore, when designing a house, the government must simultaneously consider various factors such as budget and earthquake resistance level. Therefore, this article will conduct a statistical analysis of the earthquakes with a magnitude greater than 4.0 in Fiji since 1964. Find the characteristics of the earthquake in the area and provide a reference for the local government's architectural planning.
 
 # Descriptive Statistical Analysis {#sec:1}
 
@@ -36,12 +41,15 @@ $x_4 = mag$ means Richter Magnitude, which magnitudes the earthquakes.
 
 $x_5 = stations$ means the number of stations reporting. 
 
+Those events occurred in a cube near Fiji since 1964.
+
 ```{r}
 data <- quakes
 head(data)
-length(data)
+dim(data)[1]
 summary(data)
 plot(data)
+hist(data$mag)
 par(mfrow = c(2,3))
 boxplot(data$lat, main = "The Boxplot of Latitude");
 boxplot(data$long, main = "The Boxplot of Longitude");
