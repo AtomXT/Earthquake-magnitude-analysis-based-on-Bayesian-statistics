@@ -13,10 +13,16 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = TRUE,
+	warning = TRUE
+)
 library(ggplot2)
 library(car)
 library(forecast)
+library(knitr)
+library(LearnBayes)
 ```
 
 \begin{abstract}
@@ -29,46 +35,180 @@ Fiji ’s urban area needs to demolish an area of old houses and then rebuild.  
 
 # Descriptive Statistical Analysis {#sec:1}
 
-We use one of the Harvard PRIM-H project data sets(Dr. John Woodhouse, Dept. of Geophysics, Harvard University). The dataset has 1000 observations on the following five numeric variables: 
+We use one of the Harvard PRIM-H project data sets(Dr. John Woodhouse, Dept. of Geophysics, Harvard University). The dataset has 1436 observations on the following five numeric variables: 
 
-$x_1 = lat$ means latitude of event.
+$x_1 = depth$ means depth(km).
 
-$x_2 = long$ means longitude.
+$x_2 = mag$ means Richter Magnitude, which magnitudes the earthquakes.
 
-$x_3 = depth$ means depth(km).
-
-$x_4 = mag$ means Richter Magnitude, which magnitudes the earthquakes.
-
-$x_5 = stations$ means the number of stations reporting. 
+$x_3 = stations$ means the number of stations reporting. 
 
 Those events occurred in a cube near Fiji since 1964.
+
+The first part of the observations and the summary of the variables are shown below:
 
 ```{r}
 data <- quakes
 data <- data[,c("depth", "mag", "stations")]
 M <- read.csv("./quakes.csv")
-head(data)
-dim(data)[1]
-summary(data)
+head <- head(data)
+kable(head, align = 'c', caption = "The First Part of the Observations")
+C <- summary(data)
+table2 <- cbind(C[1:6., 1], C[1:6, 2], C[1:6, 3])
+kable(table2, col.names = c("depth", "mag", "stations"), caption = "Summary of the Dataset" )
+```
+
+We can find that the seismal depths(km) ranges from $40 km$ km to $680 km$ with median $247 km$ and mean $311.4 km$, the Richter Magnitudes ranges from $4$ to $6.4$ with median $4.6$ and mean $4.62$, and the number of stations reporting ranges from $10$ to $132$ with median $27$ and mean $33.42$. Next, to make it more vividly, we depict these summary.
+
+```{r}
 plot(data)
+par(mfrow = c(1,3))
+depth <- M$depth
+hist(depth,15)
 mag <- M$mag
 hist(mag,15)
+stations <- M$stations
+hist(stations,15)
 par(mfrow = c(1,3))
 boxplot(data$depth, main  = "The Boxplot of Depth(km)");
 boxplot(data$mag, main = "The Boxplot of Richer Magnitude");
 boxplot(data$stations, main = "The Boxplot of Stations Reporting Number")
 ```
 
+The above pictures show that $mag$ and $stations$ might be positively correlated. Besides, the magnitudes appears to be normally distributed.
 
-# Method Used in the Data Analysis
+```{r}
+#######  BC transformation  ######
+lambda <- powerTransform(mag, family = "bcPower")
+mag_bc <- BoxCox(mag, lambda = 1.033341)
+shapiro.test(mag_bc)
+######## Still Unnormal, WHY???  ########
+```
 
-## Noninformative Prior
+From the descriptive analysis, we can not overemphasize the significance of Richter Magnitudes and it deserve further research. We will maily analyze the Richter Magnitudes data in the follwing sections.   
 
-### Formula Analyzing
 
-### Direct Simulation
 
-### Indirect Simulation
+
+
+# Method Used in Constructing a Prior
+
+In this part, we analyze the Richter Magnitudes in seismic data via different methods such as noninformative prior and a conjugate joint prior.
+
+## Conventional Noninformative Prior
+
+In the initial stage, we are interested in the population $\mu$ of the magnitudes, but we do not really know the value of the population variace $\sigma^2$. Thus we also treat $\sigma^2$ as an unknown parameter. In the following sections, we will use multiparameter models to obtain the posterior marginal distribution of $\mu$ and $\sigma^2$.
+
+We consider $\mu$ and $\sigma^2$ are independent, thus the conventional noninformative prior is 
+
+$$
+\pi(\mu, \sigma^2) \propto \frac{1}{\sigma^2}, -\infty<\mu<\infty,0<\sigma^2<\infty
+$$
+```{r}
+n = length(mag)
+ybar = mean(mag)
+s2 = var(mag)
+```
+
+In the data set, the number of the observations $n = 1436$, the sample mean $\bar{\mathbf{y}} = 4.32$ and the sample variance $s^2 = \frac{1}{n-1}\sum_{i = 1}^{n}(y_i - \bar{y})^2= 0.34$.
+
+The joint posterior density is 
+
+$$
+\pi(\mu, \sigma^2|\mathbf{y}) \propto \frac{1}{(\sigma^2)^{n/2 + 1}}e^{-\frac{1}{2\sigma^2}[(n-1)s^2 + n(\bar{y} - \mu)^2]}
+$$
+
+Then we use `normchi2post()` in the `LearnBayes` package to compute the logarithm of it.
+
+```{r}
+normchi2post(c(ybar, s2), mag)
+```
+
+We also use `mycontour()` in `LearnBayes` package to draw the contour lines at $10%$, $1%$, and $0.1%$ of the maximum value of the posterior density.
+
+```{r}
+##################################??????????????????????
+```
+
+
+The sampling distribution is
+$$
+y_1, \dots , y_n \sim N(\mu, \sigma^2), i.i.d.
+$$
+The marginal posterior density of $\sigma^2$ is 
+$$
+\sigma^2|\mathbf{y} \sim IG(\frac{n-1}{2}, \frac{(n-1)s^2}{2})
+$$
+### Method 1: Analytic Formula
+
+The marginal posterior density of $\mu$ is 
+$$
+\mu|\mathbf{y} \sim t_{n-1}(\mu, s^2/n) = t_{1435}(4.32, 0.000238)
+$$
+```{r}
+round(ybar + qt(c(0.025, 0.975), n - 1) * sqrt(s2/n), 3)
+```
+
+The posterior mean $E(\mu|\mathbf{y}) = \bar{y} = 4.32$, and the $95%$ equal tail posterior credible interval of $\mu$ is [4.293, 4.354].
+
+***Compairison with frequentist analysis***. We then compare our bayesian model with frequentist analysis.
+
+```{r}
+t.test(mag)
+```
+
+We find that the frequentist $95%$ percent confidence interval is also [4.293, 4.354], matching our previous analysis.
+
+### Method 2: Direct Simulation
+
+In this section, we will base on the direct simulation from the posterior distribution of $\mu$.
+
+```{r}
+# rt() generates random deviates
+post1.mu <- ybar + rt(10000, n-1) * sqrt(s2/n)
+mean(post1.mu)
+quantile(post1.mu, prob = c(0.025, 0.975))
+```
+
+The result is similar to the conclusion based on the analytic formula for the posterior distribution. 
+
+***The efficiency of direct simulation***. We can see the efficiency of direct simulation by imposing the posterior density of $\mu$ on the histogram of the posterior sample.
+
+```{r}
+hist(post1.mu, freq = F, cex.lab = 2, cex.axis = 1.5)
+rug(jitter(post1.mu))
+gt <- function(x){
+  dt((x - ybar)/sqrt(s2/n), n-1)/sqrt(s2/n)
+}
+curve(gt(x), add = T, col = "red")
+```
+
+
+### Method 3:Indirect Simulation
+
+In this section, we will base on the indirect simulation from the joint posterior distribution of both $\mu$ and $\sigma^2$. We fistly simulate $\sigma^2$, then simulate $\mu | \sigma^2$, and repeat the precess by `normpostsim()` in `LearnBayes` package.
+
+```{r eval=FALSE, include=FALSE}
+########## 
+d <- normpostsim(mag, n = 10000)
+mean(d$mu)
+quantile(d$mu, prob = c(.025, .975))
+```
+
+```{r eval=FALSE, include=FALSE}
+hist(post2.mu, freq = F, cex.lab = 2, cex.axis = 1.5)
+rug(jitter(post1.mu))
+gt <- function(x){
+  dt((x - ybar)/sqrt(s2/n), n-1)/sqrt(s2/n)
+}
+curve(gt(x), add = T, col = "red")
+```
+
+```{r}
+### mycontour
+```
+
+ 
 
 ## A Conjugate Joint Prior
 
@@ -85,3 +225,7 @@ boxplot(data$stations, main = "The Boxplot of Stations Reporting Number")
 # Conclusion
 
 # References
+
+# Appendix: Code 
+
+
